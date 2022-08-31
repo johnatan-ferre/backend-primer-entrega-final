@@ -48,7 +48,7 @@ document.getElementById('btnAgregarAlCarrito').addEventListener('click', () => {
     if (idCarrito && idProd) {
         agregarAlCarrito(idCarrito, idProd)
     } else {
-        alert('debe seleccionar un carrito y un producto')
+        alert('Debe seleccionar un carrito y un producto')
     }
 })
 
