@@ -1,38 +1,44 @@
 const { promises: fs } = require('fs')
 
 class ContenedorArchivo {
-
     constructor(ruta) {
         this.ruta = ruta;
     }
 
-    async save(object) {
+    async save(obj) {
         let productLength = await this.getAll()
         if (productLength.length > 0) {
             try {
                 let products = await this.getAll()
-                let newLastProduct  = products[products.length - 1]. id + 1
-                object.id = newLastProduct
-                object.timestamp = Date.now()
-                products.push(object)
+                let newLastProduct  = products[products.length - 1].id + 1;
+                obj.id = newLastProduct;
+                obj.timestamp = Date.now()
+                products.push(obj)
                 await fs.writeFile(this.ruta, JSON.stringify(products))
-                return object.id
-            }   catch (error) {
-                throw new Error('Ocurrió un error y no se pudo guardar.')
+                return obj.id
+            } catch (error) {
+                console.log('Ocurrió un error y no se pudo guardar.')
             }
         } else {
-            object.id = 1
-            object.timestamp = Date.now()
+            obj.id = 1
+            obj.timestamp = Date.now()
             let newProduct = []
-            newProduct.push(object)
+            newProduct.push(obj)
             try {
                 await fs.writeFile(this.ruta, JSON.stringify(newProduct))
-                return object.id
+                return obj.id
             } catch (error) {
-                throw new Error('Ocurrió un error y no se pudo guardar.')
+                console.log('Ocurrió un error y no se pudo guardar.')
             }
         }
         
+    }
+
+
+    async getById(id) {
+        const products = await this.getAll()
+        let productById = products.find(prod => prod.id == id)
+        return productById
     }
 
     async getAll() {
@@ -44,20 +50,6 @@ class ContenedorArchivo {
         }
     }
 
-    async getById(id) {
-        const products = await this.getAll()
-        let productById = products.find(product => product.id == id)
-        return productById
-    }
-
-
-    async update(elem, id) {
-        const item = await this.getAll()
-        let productToUpdate = item.find(e => e.id === id)
-        item[productToUpdate] = elem 
-        await fs.writeFile(this.ruta, JSON.stringify(item))
-    }
-
     async deleteById(id) {
         let products = await this.getAll()
         let productToDelete = products.find(prod => prod.id === id)
@@ -67,6 +59,13 @@ class ContenedorArchivo {
 
     async deleteAll() {
         await fs.unlink(this.ruta)
+    }
+
+    async update(elem, id) {
+        const item = await this.getAll()
+        let productToUpdate = item.find(e => e.id === id)
+        item[productToUpdate] = elem 
+        await fs.writeFile(this.ruta, JSON.stringify(item))
     }
 }
 
